@@ -353,6 +353,16 @@ function install_gandalf {
     echo "gandalf found running at $gandalfaddr"
 }
 
+function install_elasticsearch {
+    docker rm -f elasticsearch || true
+    docker run -d -p 9200:9200 -p 9300:9300 --restart=always --name elasticsearch elasticsearch
+}
+
+function install_logstash {
+    docker rm -f logstash || true
+    docker run -d --restart=always --net=host -v "$PWD/logstash":/config-dir --name logstash logstash -f /config-dir/logstash.conf
+}
+
 function install_go {
     local version=$(go version 2>/dev/null | sed -e 's/go version[^0-9]*\([0-9.]*\).*/\1/')
     local iversion=$(installed_version go 1.1.0 "${version}")
@@ -630,6 +640,8 @@ function install_all {
     install_mongo
     install_planb
     install_gandalf
+    install_elasticsearch
+    install_logstash
     if [[ ${install_tsuru_source-} == "1" ]]; then
         config_tsuru_pre
         install_go
