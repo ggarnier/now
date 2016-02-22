@@ -359,6 +359,7 @@ function install_elasticsearch {
 }
 
 function install_logstash {
+    mkdir -p logstash && wget -q -O logstash/logstash.conf https://raw.githubusercontent.com/tsuru/now/master/logstash/logstash.conf
     docker rm -f logstash || true
     docker run -d --restart=always --net=host -v "$PWD/logstash":/config-dir --name logstash logstash -f /config-dir/logstash.conf
 }
